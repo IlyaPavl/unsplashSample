@@ -12,6 +12,7 @@ protocol PhotosListViewModelProtocol: AnyObject {
     var state: PhotosListViewModel.State { get }
     func loadPhotos() async
     func refresh() async
+    func removePhoto(_ photo: Photo)
 }
 
 final class PhotosListViewModel: PhotosListViewModelProtocol {
@@ -19,6 +20,7 @@ final class PhotosListViewModel: PhotosListViewModelProtocol {
         case idle
         case loading
         case loaded([Photo])
+        case empty
         case error(Error)
     }
 
@@ -41,7 +43,7 @@ final class PhotosListViewModel: PhotosListViewModelProtocol {
         state = .loading
         do {
             let photos = try await photoFetcher.fetchPhotos()
-            state = .loaded(photos)
+            state = photos.isEmpty ? .empty : .loaded(photos)
         } catch {
             state = .error(error)
         }
@@ -49,5 +51,11 @@ final class PhotosListViewModel: PhotosListViewModelProtocol {
 
     func refresh() async {
         await loadPhotos()
+    }
+    
+    func removePhoto(_ photo: Photo) {
+        guard case .loaded(let photos) = state else { return }
+        let updatedPhotos = photos.filter { $0.id != photo.id }
+        state = updatedPhotos.isEmpty ? .empty : .loaded(updatedPhotos)
     }
 }

@@ -29,10 +29,12 @@ final class PhotosListViewController: UIViewController {
         static let sectionInset: CGFloat = 12
         static let defaultColumnCount = 1
         static let compactColumnCount = 2
+        static let emptyStateText = "No elements in list"
     }
 
     private var photoCollectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<Section, Photo>!
+    private var cellRegistration: UICollectionView.CellRegistration<UICollectionViewCell, Photo>!
     private let photosViewModel: PhotosListViewModelProtocol
     
     private var refreshButton: UIBarButtonItem!
@@ -61,10 +63,7 @@ final class PhotosListViewController: UIViewController {
 private extension PhotosListViewController {
 
     func configureDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Section, Photo>(collectionView: photoCollectionView) {
-            collectionView, indexPath, photo in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.cellReuseId, for: indexPath)
-
+        cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, Photo> { cell, indexPath, photo in
             let configuration = CustomContentConfiguration(
                 title: photo.displayDescription,
                 likes: "\(Constants.likeSymbol) \(photo.likes)",
@@ -72,7 +71,11 @@ private extension PhotosListViewController {
                 image: photo.urls.thumb
             )
             cell.contentConfiguration = configuration
-            return cell
+        }
+        
+        dataSource = UICollectionViewDiffableDataSource<Section, Photo>(collectionView: photoCollectionView) {
+            collectionView, indexPath, photo in
+            collectionView.dequeueConfiguredReusableCell(using: self.cellRegistration, for: indexPath, item: photo)
         }
     }
 
@@ -92,14 +95,22 @@ private extension PhotosListViewController {
         switch state {
         case .idle:
             navigationItem.rightBarButtonItem = refreshButton
+            photoCollectionView.backgroundView?.isHidden = true
         case .loading:
             navigationItem.rightBarButtonItem = loadingIndicatorItem
+            photoCollectionView.backgroundView?.isHidden = true
         case .loaded(let photos):
             applySnapshot(with: photos)
             navigationItem.rightBarButtonItem = refreshButton
+            photoCollectionView.backgroundView?.isHidden = true
+        case .empty:
+            applySnapshot(with: [])
+            navigationItem.rightBarButtonItem = refreshButton
+            photoCollectionView.backgroundView?.isHidden = false
         case .error(let error):
             showError(error)
             navigationItem.rightBarButtonItem = refreshButton
+            photoCollectionView.backgroundView?.isHidden = true
         }
     }
 
@@ -110,10 +121,8 @@ private extension PhotosListViewController {
         dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     
-    private func delete(photo: Photo, animatingDifferences: Bool = true) {
-        var snapshot = dataSource.snapshot()
-        snapshot.deleteItems([photo])
-        dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
+    private func delete(photo: Photo) {
+        photosViewModel.removePhoto(photo)
     }
 
     func showError(_ error: Error) {
@@ -163,6 +172,8 @@ private extension PhotosListViewController {
         photoCollectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         photoCollectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: Constants.cellReuseId)
         photoCollectionView.delegate = self
+        photoCollectionView.backgroundView = EmptyView(text: Constants.emptyStateText)
+        photoCollectionView.backgroundView?.isHidden = true
         view.addSubview(photoCollectionView)
     }
     

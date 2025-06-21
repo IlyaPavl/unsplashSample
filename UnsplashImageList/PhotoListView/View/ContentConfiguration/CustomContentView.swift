@@ -22,7 +22,6 @@ class CustomContentView: UIView, UIContentView {
         static let descriptionLabelFont = UIFont.systemFont(ofSize: 16, weight: .medium)
         
         static let likesLabelFont = UIFont.systemFont(ofSize: 14, weight: .bold)
-        static let likesLabelTextColor = UIColor.systemGray
         
         static let containerInset: CGFloat = 8
         static let innerInset: CGFloat = 12
@@ -56,6 +55,7 @@ class CustomContentView: UIView, UIContentView {
     private func apply(configuration: CustomContentConfiguration) {
         descriptionLabel.text = configuration.title
         likesLabel.text = configuration.likes
+        likesLabel.textColor = configuration.textColor
         descriptionLabel.textColor = configuration.textColor
         imageView.set(imageURL: configuration.image)
     }
@@ -95,7 +95,6 @@ private extension CustomContentView {
     
     func setupLikesLabel() {
         likesLabel.font = Constants.likesLabelFont
-        likesLabel.textColor = Constants.likesLabelTextColor
     }
     
     func setupConstraints() {
