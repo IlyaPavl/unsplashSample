@@ -33,7 +33,7 @@ final class PhotosListViewModel: PhotosListViewModelProtocol {
         }
     }
 
-    init(photoFetcher: PhotoUrlsDataFetcher = PhotoUrlsDataFetcher()) {
+    init(photoFetcher: PhotosDataFetcherProtocol = PhotoUrlsDataFetcher()) {
         self.photoFetcher = photoFetcher
     }
 

@@ -204,9 +204,11 @@ extension PhotosListViewController: UICollectionViewDelegate {
         navigationController?.pushViewController(detailViewController, animated: true)
     }
     
-    func collectionView(_ collectionView: UICollectionView,
-                        contextMenuConfigurationForItemAt indexPath: IndexPath,
-                        point: CGPoint) -> UIContextMenuConfiguration? {
+    func collectionView(
+        _ collectionView: UICollectionView,
+        contextMenuConfigurationForItemAt indexPath: IndexPath,
+        point: CGPoint
+    ) -> UIContextMenuConfiguration? {
         guard let photo = dataSource.itemIdentifier(for: indexPath) else { return nil }
         
         return UIContextMenuConfiguration(identifier: indexPath as NSIndexPath, previewProvider: nil) { _ in
