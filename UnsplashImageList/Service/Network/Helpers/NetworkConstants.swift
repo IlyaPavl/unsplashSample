@@ -37,3 +37,11 @@ public enum NetworkError: Error, LocalizedError {
 public enum HTTPMethodType: String {
     case get = "GET"
 }
+
+public enum LoadingState<T> {
+    case idle
+    case loading
+    case loaded([T])
+    case empty
+    case error(Error)
+}

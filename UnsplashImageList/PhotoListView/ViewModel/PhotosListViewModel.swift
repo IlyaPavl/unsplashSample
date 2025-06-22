@@ -7,27 +7,22 @@
 
 import Foundation
 
+typealias PhotosListState = LoadingState<Photo>
+
 protocol PhotosListViewModelProtocol: AnyObject {
-    var onStateChanged: ((PhotosListViewModel.State) -> Void)? { get set }
-    var state: PhotosListViewModel.State { get }
+    var onStateChanged: ((PhotosListState) -> Void)? { get set }
+    var state: PhotosListState { get }
     func loadPhotos() async
     func refresh() async
     func removePhoto(_ photo: Photo)
 }
 
 final class PhotosListViewModel: PhotosListViewModelProtocol {
-    enum State {
-        case idle
-        case loading
-        case loaded([Photo])
-        case empty
-        case error(Error)
-    }
 
-    var onStateChanged: ((State) -> Void)?
+    var onStateChanged: ((PhotosListState) -> Void)?
 
     private let photoFetcher: PhotosDataFetcherProtocol
-    private(set) var state: State = .idle {
+    private(set) var state: PhotosListState = .idle {
         didSet {
             DispatchQueue.main.async {
                 self.onStateChanged?(self.state)

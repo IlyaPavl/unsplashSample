@@ -91,7 +91,7 @@ private extension PhotosListViewController {
         }
     }
 
-    func updateUI(for state: PhotosListViewModel.State) {
+    func updateUI(for state: PhotosListState) {
         switch state {
         case .idle:
             navigationItem.rightBarButtonItem = refreshButton
@@ -172,7 +172,7 @@ private extension PhotosListViewController {
         photoCollectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         photoCollectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: Constants.cellReuseId)
         photoCollectionView.delegate = self
-        photoCollectionView.backgroundView = EmptyView(text: Constants.emptyStateText)
+        photoCollectionView.backgroundView = EmptyStateView(text: Constants.emptyStateText)
         photoCollectionView.backgroundView?.isHidden = true
         view.addSubview(photoCollectionView)
     }
