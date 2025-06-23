@@ -37,14 +37,10 @@ iOS приложение для просмотра фотографий, пос�
    Приложение использует [Unsplash API](https://unsplash.com/documentation) для загрузки изображений.
    Зарегистрируйтесь на Unsplash и получите свой `Access Key`.
 
-   Затем откройте файл:
-
-   ```
-  ~Network/Helpers/NetworkConstants.swift'
-   ```
+4. Затем откройте файл: ~Network/Helpers/NetworkConstants.swift'
 
    И вставьте свой ключ:
-
+   
    ```swift
     public enum API {
         static let clientID = "YOUR_API_KEY"
